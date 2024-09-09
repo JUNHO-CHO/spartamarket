@@ -50,3 +50,43 @@ class ProductDeleteView(DestroyAPIView):
         if self.request.user != instance.author:  # 작성자만 삭제 가능
             raise PermissionDenied("삭제 권한이 없습니다.")
         instance.delete()
+
+
+
+
+
+
+        class ProductDetailAPIView(APIView):
+            permission_classes = [IsAuthenticated]
+
+            def get_object(self, pk):
+                return get_object_or_404(Product, pk=pk)
+
+            def get(self, request, pk):  # 상품 세부 목록 조회
+                product = self.get_object(pk)
+                serializer = ProductSerializer(product)
+                return Response(serializer.data)
+
+            def put(self, request, pk):  # 상품 수정
+                product = self.get_object(pk)
+                if request.user != product.author:
+                    raise PermissionDenied("수정이 불가능 합니다.")
+                serializer = ProductSerializer(product, data=request.data, partial=True)
+                if serializer.is_valid(raise_exception=True):
+                    serializer.save()
+                    return Response(serializer.data)
+
+            def delete(self, request, pk):  # 상품 삭제
+                product = self.get_object(pk)
+                if request.user != product.author:
+                    raise PermissionDenied("삭제가 불가능 합니다.")
+                product.delete()
+                return Response({"message": f"상품 ({pk})를 삭제했습니다."}, status=status.HTTP_204_NO_CONTENT)
+
+            def delete(self, request, pk):  # 상품 삭제
+                products = self.get_object(pk)  # 지울 products 조회
+                if request.user != products.author:
+                    raise PermissionDenied("삭제안됨")
+                products.delete()
+                data = {"delete": f"Product({pk}) is deleted."}
+                return Response(data, status=status.HTTP_200_OK)

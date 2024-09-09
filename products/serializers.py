@@ -18,3 +18,4 @@ class ProductSerializer(serializers.ModelSerializer):
             instance.image = validated_data.get('image')  # 이미지 수정 처리
         instance.save()
         return instance
+
