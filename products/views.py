@@ -12,11 +12,10 @@ from rest_framework.generics import DestroyAPIView
 
 # Create your views here.
 class ProductCreateView(APIView):
-
     permission_classes = (IsAuthenticated,)
 
     def post(self, request):
-        serializer = ProductSerializer(data=request.data)
+        serializer = ProductSerializer(data=request.data, context={'request': request})
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -38,7 +37,7 @@ class ProductUpdateView(UpdateAPIView):
 
     def perform_update(self, serializer):
         product = self.get_object()
-        if self.request.user != product.author:  # 작성자만 수정 가능
+        if self.request.user != product.author:
             raise PermissionDenied("수정 권한이 없습니다.")
         serializer.save()
 

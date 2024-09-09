@@ -3,7 +3,18 @@ from .models import Product
 
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Product  # 직렬화 할 모델
-        fields = '__all__' #반환값
-        # read_only_fields = ('created_at')  #읽기만 할것들
+        model = Product
+        fields = ['id', 'title', 'content', 'image', 'author']  # 이미지 필드 포함
+        read_only_fields = ['author']
 
+    def create(self, validated_data):
+        validated_data['author'] = self.context['request'].user
+        return super().create(validated_data)
+
+    def update(self, instance, validated_data):
+        instance.title = validated_data.get('title', instance.title)
+        instance.content = validated_data.get('content', instance.content)
+        if validated_data.get('image'):
+            instance.image = validated_data.get('image')  # 이미지 수정 처리
+        instance.save()
+        return instance
