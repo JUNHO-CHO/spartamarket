@@ -9,7 +9,6 @@ from .serializers import CustomUserSerializer
 
 User = get_user_model()
 
-
 # 회원가입 뷰
 class RegisterView(APIView):
 
@@ -20,7 +19,6 @@ class RegisterView(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-
 # 로그인 뷰
 class LoginView(APIView):
 
@@ -28,19 +26,22 @@ class LoginView(APIView):
         username = request.data.get('username')
         password = request.data.get('password')
 
+        # 사용자 인증
         user = authenticate(username=username, password=password)
 
         if user is not None:
+            # JWT 토큰 생성
             refresh = RefreshToken.for_user(user)
+            access_token = str(refresh.access_token)  # access_token을 문자열로 변환 후 반환
+
             return Response({
                 'refresh': str(refresh),
-                'access': str(refresh.access_token),
+                'access': access_token,  # access_token을 반환
             }, status=status.HTTP_200_OK)
         else:
             return Response({
                 'detail': 'Invalid credentials'
             }, status=status.HTTP_401_UNAUTHORIZED)
-
 
 # 프로필 조회 뷰
 class UserProfileView(APIView):
