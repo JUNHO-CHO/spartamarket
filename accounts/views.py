@@ -16,7 +16,8 @@ def register(request):
     if serializer.is_valid():
         serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUES
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 # 로그인 뷰
 @api_view(['POST'])
@@ -41,7 +42,7 @@ def login(request):
 # 프로필 조회 뷰
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
-def user_profile(request, username):
+def user_profile(username):
     # 프로필 조회 대상 사용자 찾기
     user = get_object_or_404(User, username=username)
 
