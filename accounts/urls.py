@@ -1,8 +1,9 @@
 from django.urls import path
-from .views import register, login, user_profile
+from .views import RegisterView, LoginView, UserProfileView
 
+# 회원가입 엔드포인트 설정
 urlpatterns = [
-    path('create/', register, name='register'),
-    path('login/', login, name='login'),
-    path('accounts/<str:username>/', user_profile, name='user-profile'),
+    path('create/', RegisterView.as_view(), name='register'),
+    path('login/', LoginView.as_view(), name='login'),
+    path('accounts/<str:username>/', UserProfileView.as_view(), name='user-profile'),
 ]
